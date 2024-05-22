@@ -62,24 +62,28 @@ def download_and_parse_file(url, variant_number):
     
     return diameter, fmin, fmax
 
-
 # Сохранение результатов в XML
 def save_results_to_xml(filename, frequencies, rcs_values):
+
     data = ET.Element("data")
+
+    freq_elem = ET.SubElement(data, "freq")
+    lambda_elem = ET.SubElement(data, "lambda")
+    rcs_elem = ET.SubElement(data, "rcs")
+    
     for freq, rcs in zip(frequencies, rcs_values):
-        row = ET.SubElement(data, "row")
-        freq_elem = ET.SubElement(row, "freq")
-        lambda_elem = ET.SubElement(row, "lambda")
-        rcs_elem = ET.SubElement(row, "rcs")
+        freq_sub_elem = ET.SubElement(freq_elem, "freq")
+        lambda_sub_elem = ET.SubElement(lambda_elem, "lambda")
+        rcs_sub_elem = ET.SubElement(rcs_elem, "rcs")
         
-        freq_elem.text = str(freq)
-        lambda_elem.text = str(c / freq)
-        rcs_elem.text = str(rcs)
+        freq_sub_elem.text = str(freq)
+        lambda_sub_elem.text = str(c / freq)
+        rcs_sub_elem.text = str(rcs)
     
     tree = ET.ElementTree(data)
     with open(filename, 'wb') as file:
         tree.write(file, encoding="UTF-8", xml_declaration=True)
-
+        
 # Построение графика
 def plot_rcs(frequencies, rcs_values):
     plt.plot(frequencies, rcs_values)
@@ -107,6 +111,5 @@ def main():
     # Построение графика
     plot_rcs(frequencies, rcs_values)
     
-
 if __name__ == "__main__":
     main()
